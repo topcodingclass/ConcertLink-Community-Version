@@ -1,10 +1,11 @@
 import { Text, StyleSheet,  View, FlatList, TextInput,ImageBackground, TouchableOpacity } from 'react-native'
 import { Button, Input } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
-import {  doc, getDocs, addDoc, collection  } from "firebase/firestore";
+import {  doc, getDocs, addDoc, collection, deleteDoc  } from "firebase/firestore";
 import { db } from '../firebase';
+import { Ionicons } from "@expo/vector-icons";
 
-const CommunityManageUsersScreen = ({ navigation }) => {
+const CommunityManageUserScreen = ({ navigation }) => {
     const [users, setUsers] = useState("");
 
   useEffect(async()=> {
@@ -19,29 +20,35 @@ const CommunityManageUsersScreen = ({ navigation }) => {
     console.log("user: " + name + "\n")
   })
 
-const handleUpdate = (item) => {
-  // Update the item in Firebase
-  firebase.database().ref('users/' + item.key).update({
-    name: item.name,
-    email: item.email,
-  })
-    .then(() => {
-      console.log('Item updated successfully in Firebase');
-    })
-    .catch((error) => {
-      console.log('Error updating item in Firebase: ', error);
-    });
-};
+  const deleteItem = async (id) => {
+    try {
+      // Reference the document in the Firestore collection
+      const userRef = doc(db, 'communities', "Zs6zfsZ2ApDPW8Vv6UoZ", "users", id);
 
+      // Delete the document from Firestore
+      await deleteDoc(userRef);
+
+      // After successful deletion, update the state to reflect the changes
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+  
  const renderItem = ({ item }) =>(
   <view>
-    <Text> value = {item.name}</Text>
-    <Text> value = {item.email}</Text>
-    <Text> value = {item.phone}</Text>
-    <Text> value = {item.birthday}</Text>
-    
-    <Button title="Update" onPress={() => handleUpdate(item)} />
-    <TouchableOpacity onPress={() => props.deleteTodo(index)}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('AddUser', {item})
+      }>
+    <Text> {item.name}</Text>
+    <Text> {item.email}</Text>
+    <Text> {item.phone}</Text>
+    <Text> {item.birthday}</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={() => deleteItem(item.id)}>
+      <Ionicons name="trash-outline" size={24} color="black" />
     </TouchableOpacity>
 
     
@@ -62,7 +69,7 @@ const handleUpdate = (item) => {
   )
 }
 
-export default CommunityManageUsersScreen
+export default CommunityManageUserScreen
 
 const styles = StyleSheet.create({
   title:{
