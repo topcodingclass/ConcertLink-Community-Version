@@ -1,15 +1,19 @@
 import { StyleSheet,  View, ImageBackground } from 'react-native'
-import { Button, Input } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
 import {  addDoc, collection, doc } from "firebase/firestore";
 import { db } from '../firebase';
+import { Button, TextInput, Card, IconButton } from 'react-native-paper';
 
-const CommunityAddUserScreen = ({navigation}) => {
+const CommunityAddUserScreen = ({route, navigation}) => {
+    const user = route.params
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [birthday, setBirthday] = useState("");
     
+    useEffect(() => {
+      console.log("*********" , user)
+    },[])
 
   const AddUser = async ()=>{
     try {
@@ -29,54 +33,49 @@ const CommunityAddUserScreen = ({navigation}) => {
 
   return (
     
-    <View style={{marginTop:230}}>
+    <Card>
         
-      <Input
-        placeholder="Enter your user's name"
-        leftIcon={{ type: "material", name: "badge" }}
-        styles={styles}
+      <TextInput
+        placeholder = "Enter your user's name"
         label="Name"
+        value={name}
         onChangeText={setName}
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your user's email"
-        leftIcon={{ type: "material", name: "email" }}
-        styles={styles}
         label="Email"
+        value={email}
         onChangeText={setEmail}
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your user's phone number"
-        leftIcon={{ type: "material", name: "phone" }}
-        styles={styles}
         label="Phone"
+        value={phone}
         onChangeText={setPhone}
         
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your user's Birthday"
-        leftIcon={{ type: "material", name: "calendar-range" }}
-        styles={styles}
         label="Birthday"
+        value={birthday}
         onChangeText={setBirthday}
         
       />
 
-      <View style={{alignItems:'center'}}>
+      <Card.Actions>
+        
       <Button 
-      title="Confirm" 
-      type = "outline"
-      buttonStyle={{borderColor: 'rgba(39, 213, 245, 0.8)', backgroundColor: 'rgba(209, 248, 255, 0.8)', borderRadius: 15, borderWidth: 2 }} 
-      titleStyle={{ color: 'rgba(39, 213, 245, 0.8)', fontWeight: 'bold', fontSize: 25 }} 
-      onPress={AddUser} 
-      style={{padding: 10, width:350}}/>
+      mode="elevated"
+      buttonColor = "lavender"
+      onPress={AddUser}
+      >Confirm</Button>
 
-      </View>
+      </Card.Actions>
 
-    </View>
+    </Card>
     
   )
 }
