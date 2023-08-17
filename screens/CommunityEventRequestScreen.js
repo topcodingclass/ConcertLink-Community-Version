@@ -1,7 +1,7 @@
-import { StyleSheet, View, FlatList } from 'react-native'
+import { StyleSheet, View, FlatList, SafeAreaView } from 'react-native'
 import { getDocs, collection, query, where, collectionGroup, addDoc } from 'firebase/firestore';
 import React, { useState, useEffect } from "react";
-import { Avatar, Card, IconButton, Button } from 'react-native-paper';
+import { Avatar, Card, IconButton, Button, Text } from 'react-native-paper';
 import { db } from '../firebase';
 
 const CommunityEventRequestScreen = () => {
@@ -23,6 +23,7 @@ const CommunityEventRequestScreen = () => {
           // Iterate through each volunteer group
           for (const groupDoc of volunteerGroupsSnapshot.docs) {
             const volunteerGroupId = groupDoc.id;
+            const volunteerGroupData = groupDoc.data()
             const volunteerGroupName = groupDoc.data().name;
             console.log(volunteerGroupName)
 
@@ -31,7 +32,7 @@ const CommunityEventRequestScreen = () => {
       // Iterate through each availability within the volunteer group
             availabilitiesSnapshot.forEach((availabilityDoc) => {
               const availabilityData = availabilityDoc.data();
-              allAvailabilities.push({groupName: volunteerGroupName, groupID: volunteerGroupId, ...availabilityData});
+              allAvailabilities.push({groupName: volunteerGroupName, groupID: volunteerGroupId, ...availabilityData, ...volunteerGroupData, showDetail:false});
             });
           }
           
@@ -47,6 +48,10 @@ const CommunityEventRequestScreen = () => {
     useEffect(() => {
         readAvailabilities()
       },[])
+
+      useEffect(() => {
+        console.log(availabilities)
+      })
 
 
     const requestEvent = async(item) => { 
@@ -84,7 +89,13 @@ const CommunityEventRequestScreen = () => {
 
       //To-Do : Show information for the music group when clicking the ...
 
-      right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />} 
+      right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {
+        // Toggle the showDetail value for the clicked item
+        item.showDetail = !item.showDetail;
+        // Create a copy of availabilities with the updated item
+        const updatedAvailabilities = [...availabilities];
+        setAvailabilities(updatedAvailabilities);
+      }} />} 
       />
       <Card.Actions>
         <Button 
@@ -92,17 +103,24 @@ const CommunityEventRequestScreen = () => {
         mode="elevated"
         buttonColor = "lavender" >Request</Button>
       </Card.Actions>
+      {item.showDetail && (
+        <Card.Content>
+          <Text variant="bodyMedium">Name:{item.groupName}</Text>
+          <Text variant="bodyMedium">{item.description}</Text>
+        </Card.Content>
+      )
+      }
     </Card>
       );
 
 
   return (
-    <View>
+    <SafeAreaView>
       <FlatList
       data={availabilities}
       renderItem={renderItem}
       />
-    </View>
+    </SafeAreaView>
   )
 }
 
