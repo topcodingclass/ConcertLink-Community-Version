@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
 import React, { useState, useEffect } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { collection, addDoc, getDocs } from "firebase/firestore";
@@ -74,7 +75,7 @@ const ResRegisterScreen = ( {navigation} ) => {
         />
       </View>
       <TextInput style={styles.input} placeholder='Password' onChangeText={password => setPassword(password)} />
-      <Button title="Sign Up" onPress={signUp} />
+      <Button onPress={signUp}> Sign Up </Button>
     </View>
   );
 };
