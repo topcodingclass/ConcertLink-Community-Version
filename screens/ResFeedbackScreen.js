@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import { TextInput, Button } from 'react-native-paper';
 import React, {useState, useEffect} from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { collection, addDoc, getDocs } from "firebase/firestore"; 
@@ -58,7 +59,7 @@ const ResFeedbackScreen = ( {route, navigation} ) => {
         <View style={styles.inputContainer}>
           <TextInput style={styles.input} placeholder='Give us your feedback!' onChangeText={comments => setComments(comments)} />
 
-          <Button styles={styles.sendButton} title="Send" onPress={send} />
+          <Button onPress={send}> Send </Button>
           </View>  
         </View>
       );
