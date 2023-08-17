@@ -1,11 +1,27 @@
-import { StyleSheet, Button, Text, TextInput, View, FlatList, SafeAreaView} from 'react-native'
+import { StyleSheet,TextInput, View, FlatList, SafeAreaView} from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { collection, getDocs, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, query, where } from "firebase/firestore";
 import { db, auth } from '../firebase';
+import { Avatar, Card, IconButton, Button } from 'react-native-paper';
 
 const CommunityEventsScreen = ( {navigation} ) => {
     const [events, setEvents] = useState([])
-    
+    const user = auth.currentUser;
+ 
+
+const getCommunityGroupID = async () => {
+  const docRef = doc(db, "users", user.uid);
+  const docSnap = await getDoc(docRef);
+  let groupID = ""
+  if (docSnap.exists()) {
+    groupID = docSnap.data().communityID
+  } else {
+    console.log("No such document!");
+  }
+  console.log(groupID, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  return groupID
+}
+
     useEffect(()=>{
       fetchData();
       
@@ -23,15 +39,16 @@ const CommunityEventsScreen = ( {navigation} ) => {
       </View>
     );
 
-
     const fetchData = async () => {
       let eventsFromDB = [];
-      const querySnapshot = await getDocs(collection(db, 'events'));
+      const groupID = getCommunityGroupID()
+      const query = query(collection(db, "events"), where( communityID, "==", groupID));
+      const querySnapshot = await getDocs(query);
       const docsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       console.log("+++++++++++++++++++++++++++++++++++", docsData);
-    
+
       for (const docSnap of docsData) {
-        if (!docSnap.empty) {
+        if (!docSnap.empty && docSnap.communityID == groupID) { // Check if the groupID matches
           const songsCollectionRef = collection(db, 'events', docSnap.id, 'songs');
           const songsSnapshot = await getDocs(songsCollectionRef);
           const songsData = songsSnapshot.docs.map((songDoc) => songDoc.data());
@@ -39,7 +56,8 @@ const CommunityEventsScreen = ( {navigation} ) => {
           eventsFromDB.push({ id: docSnap.id, ...docSnap, songsData });
           console.log("Document:", docSnap);
         } else {
-          console.log("No such document!");
+          console.log(docSnap.communityID, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          console.log("No such document or event has a different groupID, skipping:", docSnap);
         }
       }
     
@@ -72,26 +90,39 @@ const CommunityEventsScreen = ( {navigation} ) => {
 
 
       const renderItem = ({ item }) => (
+        <Card>
+          <Card.Title
+            title= {item.volunteerGroupName}
+            subtitle= {item.dateTime.toDate().toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            left={(props) => <Avatar.Icon {...props} icon="folder" />}
+            right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
+          />
+          <Card.Actions>
+          <Button  onPress={() => navigation.navigate('Feedback', {
+             eventID: item.id
+          })}>Send Feedback</Button>
+        </Card.Actions>
+        </Card>
+
+      //   <View style={styles.item}>
+      //     <Text style={styles.label}>{item.volunteerGroupName}</Text>
+      //     <Text style={styles.subLabel}>Date:</Text>
+      //     <Text style={styles.info}>{item.dateTime.toDate().toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
+      //     <Text style={styles.subLabel}>Location:</Text>
+      //     <Text style={styles.info}>{item.communityName}</Text>
+      //     <Text style={styles.subLabel}>Songs:</Text>
+      //     <View style={styles.songsContainer}>
+      //   {item.songsData.map((song, index) => (
+      //     song.isSelected && (
+      //       <Text key={index} style={styles.songName}>{song.name}</Text>
+      //     )
+      //   ))}
+      // </View>
+      //   <Button title="Send feedback" onPress={() => navigation.navigate('Resident Feedback', {
+      //       eventID: item.id
+      //     })} />
         
-        <View style={styles.item}>
-          <Text style={styles.label}>{item.volunteerGroupName}</Text>
-          <Text style={styles.subLabel}>Date:</Text>
-          <Text style={styles.info}>{item.dateTime.toDate().toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
-          <Text style={styles.subLabel}>Location:</Text>
-          <Text style={styles.info}>{item.communityName}</Text>
-          <Text style={styles.subLabel}>Songs:</Text>
-          <View style={styles.songsContainer}>
-        {item.songsData.map((song, index) => (
-          song.isSelected && (
-            <Text key={index} style={styles.songName}>{song.name}</Text>
-          )
-        ))}
-      </View>
-        <Button title="Send feedback" onPress={() => navigation.navigate('Resident Feedback', {
-            eventID: item.id
-          })} />
-        
-        </View>
+      //   </View>
       );
       
     return (
