@@ -1,8 +1,8 @@
 import { StyleSheet,  View, ImageBackground } from 'react-native'
-import { Button, Input } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
 import {  addDoc, collection } from "firebase/firestore";
 import { db } from '../firebase';
+import { Button, TextInput, Card, IconButton } from 'react-native-paper';
 
 const CommunityRegisterScreen = ({navigation}) => {
     const [name, setName] = useState("");
@@ -12,7 +12,7 @@ const CommunityRegisterScreen = ({navigation}) => {
     const [state, setState] = useState("");
     const [phone, setPhone] = useState("");
     const [zip, setZip] = useState("");
-    const [size, setSize] = useState(0);
+    const [size, setSize] = useState("");
     const [description, setDescription] = useState("");
     
     
@@ -40,106 +40,93 @@ const CommunityRegisterScreen = ({navigation}) => {
   return (
     
     
-    <View style={{marginTop:230}}>
+    <Card>
         
-      <Input
+      <TextInput
         placeholder="Enter your group's name"
-        leftIcon={{ type: "material", name: "account-group" }}
-        styles={styles}
         label="Name"
+        value={name}
         onChangeText={setName}
       />
 
-       <Input
+       <TextInput
         placeholder="Enter your group's email"
-        leftIcon={{ type: "material", name: "email" }}
-        styles={styles}
         label="Email"
+        value={email}
         onChangeText={setEmail}
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your group's address"
-        leftIcon={{ type: "material", name: "office-building" }}
-        styles={styles}
         label="Address"
+        value={address}
         onChangeText={setAddress}
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your group's city"
-        leftIcon={{ type: "material", name: "city" }}
-        styles={styles}
         label="City"
+        value={city}
         onChangeText={setCity}
         
       />
 
-      <Input
+      <TextInput
         placeholder="Enter your group's state"
-        leftIcon={{ type: "material", name: "image-filter-hdr-outline" }}
-        styles={styles}
         label="State"
+        value={state}
         onChangeText={setState}
         
       />
 
-        <Input
+        <TextInput
         placeholder="Enter your group's phone number"
-        leftIcon={{ type: "material", name: "phone" }}
-        styles={styles}
         label="Phone"
+        value={phone}
         onChangeText={setPhone}
         
       />    
 
-      <Input
+      <TextInput
         placeholder="Enter your zip code"
-        leftIcon={{ type: "material", name: "form-textbox-password" }}
-        styles={styles}
         label="Zip"
+        value={zip}
         onChangeText={setZip}
        
       />
 
-        <Input
-        placeholder="Enter your group's size"
-        leftIcon={{ type: "material", name: "numeric" }}
-        styles={styles}
-        label="Size"
-        onChangeText={setSize}
+      <TextInput
+      placeholder="Enter your group's size"
+      label="Size"
+      value={size}
+      onChangeText={setSize}
         
       />
 
-        <Input
-        placeholder="Enter your group's description"
-        leftIcon={{ type: "material", name: "image-text" }}
-        styles={styles}
-        label="Description"
-        onChangeText={setDescription}
+      <TextInput
+      placeholder="Enter your group's description"
+      label="Description"
+      value={description}
+      onChangeText={setDescription}
         
       />
 
 
-      <View style={{alignItems:'center'}}>
-      <Button 
-      title="Sign up" 
-      type = "outline"
-      buttonStyle={{borderColor: 'rgba(39, 213, 245, 0.8)', backgroundColor: 'rgba(209, 248, 255, 0.8)', borderRadius: 15, borderWidth: 2 }} 
-      titleStyle={{ color: 'rgba(39, 213, 245, 0.8)', fontWeight: 'bold', fontSize: 25 }} 
-      onPress={Register} 
-      style={{padding: 10, width:350}}/>
+      <Card.Actions>
+        <Button 
+        mode="elevated"
+        buttonColor = "lavender" 
+        onPress={Register} 
+        >Sign Up</Button>
 
-      <Button 
-      title="Move to Login" 
-      buttonStyle={{backgroundColor: 'rgba(39, 213, 245, 0.8)', borderRadius: 15 }} 
-      titleStyle={{ fontWeight: 'bold', fontSize: 25 }} 
-      icon={{name: 'arrow-right',type: 'font-awesome',size: 20,color: 'white',}}
-      onPress={()=>navigation.navigate('User Login')} 
-      style={{padding: 10, width:350, marginVertical:5}}/>
-      </View>
+        <Button 
+        mode="elevated"
+        buttonColor = "lavender" 
+        onPress={()=>navigation.navigate('User Login')}
+        >Move to Login</Button>
+      </Card.Actions>
 
-    </View>
+    </Card>
     
     
   )
