@@ -1,11 +1,38 @@
-import { Text, StyleSheet,  View, FlatList, TextInput,ImageBackground, TouchableOpacity } from 'react-native'
-import { Button, Input } from "@rneui/themed";
+import { Text, StyleSheet,  View, FlatList, ImageBackground, TouchableOpacity, StyleProp,
+  ViewStyle,
+  Animated,
+  Platform,
+  ScrollView,
+  SafeAreaView,
+  I18nManager } from 'react-native'
 import React, { useState, useEffect } from "react";
 import {  doc, getDocs, addDoc, collection, deleteDoc  } from "firebase/firestore";
 import { db } from '../firebase';
 import { Ionicons } from "@expo/vector-icons";
+import {  TextInput, Card, Button, AnimatedFAB} from 'react-native-paper';
 
-const CommunityManageUserScreen = ({ navigation }) => {
+const CommunityManageUserScreen =  ({ navigation,
+  animatedValue,
+  visible,
+  extended,
+  label,
+  animateFrom,
+  style,
+  iconMode,
+}) => {
+  const [isExtended, setIsExtended] = React.useState(true);
+
+  const isIOS = Platform.OS === 'ios';
+
+  const onScroll = ({ nativeEvent }) => {
+    const currentScrollPosition =
+      Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
+
+    setIsExtended(currentScrollPosition <= 0);
+  };
+
+  const fabStyle = { [animateFrom]: 16 };
+
     const [users, setUsers] = useState("");
 
   useEffect(async()=> {
@@ -36,42 +63,61 @@ const CommunityManageUserScreen = ({ navigation }) => {
   };
   
  const renderItem = ({ item }) =>(
-  <view>
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('AddUser', {item})
-      }>
-    <Text> {item.name}</Text>
-    <Text> {item.email}</Text>
-    <Text> {item.phone}</Text>
-    <Text> {item.birthday}</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity onPress={() => deleteItem(item.id)}>
-      <Ionicons name="trash-outline" size={24} color="black" />
-    </TouchableOpacity>
+  <Card>
+    <Card.Title
+    title={item.name}
+    subtitle={item.email +" "+ item.phone +" "+ item.birthday}
+    >
+    </Card.Title>
+    
+    <Card.Actions>
+      <Button 
+      onPress={() => deleteItem(item.id)} 
+      mode="elevated"
+      buttonColor = "lavender" >Delete</Button>
+    </Card.Actions>
 
     
-  </view>
+  </Card>
  );
 
   return (
-
-    <View>
+    
+    <SafeAreaView style={styles.container}>
       <Text style ={styles.title}>Edit Users</Text>
 
       <FlatList
+      onScroll={onScroll}
       data={users}
       renderItem={renderItem}
       />
+
+      <AnimatedFAB
+        icon={'plus'}
+        label={'Add User'}
+        extended={isExtended}
+        onPress={() => navigation.navigate("AddUser")}
+        visible={visible}
+        animateFrom={'right'}
+        iconMode={'static'}
+        style={[styles.fabStyle, style, fabStyle]}
+      />
       
-    </View>
+    </SafeAreaView>
   )
 }
 
 export default CommunityManageUserScreen
 
 const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+  },
+  fabStyle: {
+    bottom: 16,
+    right: 16,
+    position: 'absolute',
+  },
   title:{
     fontSize: 30,
     fontWeight: '700',
