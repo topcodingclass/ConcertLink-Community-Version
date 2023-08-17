@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, Text, View, ImageBackground  } from "react-native";
-import { Button, Input } from "@rneui/themed";
 import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { Button, TextInput, Card, IconButton } from 'react-native-paper';
 
 const CommunityLogInScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [secureTextEntry, setSecureTextEntry] = useState(true); // Track password visibility
+
+  const togglePasswordVisibility = () => {
+    setSecureTextEntry(!secureTextEntry); // Toggle the value
+  };
   
 
   //Login function
@@ -25,41 +30,40 @@ const CommunityLogInScreen = ({ navigation }) => {
     }
   return (
     
-    <View style={{marginTop:230}}> 
-      <Input
-        placeholder="Enter your email"
-        leftIcon={{ type: "material", name: "email" }}
-        styles={styles}
+    <Card> 
+      <TextInput
         label="Email"
+        value={email}
         onChangeText={setEmail}
       />
 
-      <Input
-        placeholder="Enter your password"
-        leftIcon={{ type: "material", name: "lock" }}
-        style={styles}
+      <TextInput
         label="Password"
+        value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={secureTextEntry} // Use the state to determine secureTextEntry
+        right={
+          <TextInput.Icon
+            icon={secureTextEntry ? "eye-off" : "eye"} // Change the icon based on secureTextEntry
+            onPress={togglePasswordVisibility} // Toggle the password visibility
+          />
+        }
       />
-      <View style={{alignItems:'center'}}>
+
+      <Card.Actions>
         <Button 
-        title="Login" 
-        buttonStyle={{ backgroundColor: 'rgba(39, 213, 245, 0.8)', borderRadius: 15 }} 
-        titleStyle={{ fontWeight: 'bold', fontSize: 25 }} 
-        icon={{name: 'sign-in',type: 'font-awesome',size: 20,color: 'white',}}
+        mode="elevated"
+        buttonColor = "lavender" 
         onPress={login} 
-        style={{ padding: 10, marginVertical: 5, width: 370 }} />
+        >Login</Button>
 
         <Button 
-        title="Create Account" 
-        buttonStyle={{backgroundColor: 'rgba(39, 213, 245, 0.8)', borderRadius: 15 }} 
-        titleStyle={{ fontWeight: 'bold', fontSize: 25 }} 
-        icon={{name: 'user-plus',type: 'font-awesome',size: 20,color: 'white',}}
-        onPress={() => navigation.navigate("User Register")} 
-        style={{padding: 10, width: 370 }} />
-      </View>
-    </View>
+        mode="elevated"
+        buttonColor = "lavender" 
+        onPress={() => navigation.navigate("SignUpUser")}
+        >Create Account</Button>
+      </Card.Actions>
+    </Card>
     
   )
 }
