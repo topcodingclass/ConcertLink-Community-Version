@@ -81,6 +81,9 @@ const CommunityEventRequestScreen = () => {
       title={item.groupName}
       subtitle={item.dateTime.toDate().toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
       left={(props) => <Avatar.Icon {...props} icon="folder" />}
+
+      //To-Do : Show information for the music group when clicking the ...
+
       right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />} 
       />
       <Card.Actions>
